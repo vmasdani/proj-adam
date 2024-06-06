@@ -31,6 +31,17 @@ Route::get('/users', function () {
 Route::get('/items', function () {
     return Item::all();
 });
+Route::get('/items/{id}', function (?int $id) {
+    $foundItem = Item::query()->find($id);
+
+    $foundItem->transactions->each(function (Transaction $t) {
+        $t->purchaseRequest();
+        $t->borrow;
+    });
+
+    return $foundItem;
+});
+
 Route::post('/items', function (Request $r) {
     $b = json_decode($r->getContent());
     return Item::query()->updateOrCreate(['id' => isset($b->id) ? $b->id : null], (array)$b);

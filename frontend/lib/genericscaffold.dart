@@ -80,7 +80,17 @@ class _GenericScaffoldState extends State<GenericScaffold> {
                   },
                 ),
                 ListTile(
-                  title: const Text('Borrow List'),
+                  title: const Text('Inventory'),
+                  onTap: () {
+                    // Update the state of the app.
+                    // ...
+                    state.setCurrentPage(5);
+                    Navigator.pop(context);
+                  },
+                ),
+                
+                ListTile(
+                  title: const Text('Borrow Item'),
                   onTap: () {
                     // Update the state of the app.
                     // ...
@@ -89,11 +99,31 @@ class _GenericScaffoldState extends State<GenericScaffold> {
                   },
                 ),
                 ListTile(
-                  title: const Text('Purchase Request List'),
+                  title: const Text('Borrow List'),
+                  onTap: () {
+                    // Update the state of the app.
+                    // ...
+                    state.setCurrentPage(6);
+                    Navigator.pop(context);
+                  },
+                ),
+                
+                ListTile(
+                  title: const Text('Purchase Request Item'),
                   onTap: () {
                     // Update the state of the app.
                     // ...
                     state.setCurrentPage(4);
+
+                    Navigator.pop(context);
+                  },
+                ),
+                 ListTile(
+                  title: const Text('Purchase Request List'),
+                  onTap: () {
+                    // Update the state of the app.
+                    // ...
+                    state.setCurrentPage(7);
 
                     Navigator.pop(context);
                   },

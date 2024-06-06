@@ -23,6 +23,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|Item whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Item whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Item whereUpdatedAt($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Transaction> $transactions
+ * @property-read int|null $transactions_count
  * @mixin \Eloquent
  */
 class Item extends Model

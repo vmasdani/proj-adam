@@ -5,50 +5,38 @@ import 'package:provider/provider.dart';
 import 'package:schoolinventory/appstate.dart';
 import 'package:schoolinventory/genericscaffold.dart';
 import 'package:schoolinventory/helpers.dart';
+import 'package:schoolinventory/inventoryadd.dart';
 import 'package:schoolinventory/itemadd.dart';
 
-class ItemsPage extends StatefulWidget {
-  const ItemsPage({super.key});
+class PurchaseRequestItemPage extends StatefulWidget {
+  const PurchaseRequestItemPage({super.key});
 
   @override
-  State<ItemsPage> createState() => _ItemsPageState();
+  State<PurchaseRequestItemPage> createState() => _PurchaseRequestItemPageState();
 }
 
-class _ItemsPageState extends State<ItemsPage> {
-  List<dynamic> _items = [];
+class _PurchaseRequestItemPageState extends State<PurchaseRequestItemPage> {
+  List<dynamic> _inventory = [];
 
   @override
   void initState() {
-    fetchItemsData();
+    fetchInventoryData();
 
     super.initState();
   }
 
-  void fetchItemsData() async {
-    final d = await fetchItems();
+  void fetchInventoryData() async {
+    final d = await fetchInventoryList();
 
     setState(() {
-      _items = d;
+      _inventory = d;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return GenericScaffold(
-      fab: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ItemAddPage(
-                        onSave: () async {
-                          fetchItemsData();
-                        },
-                      )));
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      
       body: SingleChildScrollView(
         child: Container(
           child: Column(
@@ -56,12 +44,12 @@ class _ItemsPageState extends State<ItemsPage> {
               ...[
                 Container(
                   child: Text(
-                    'Items',
+                    'Purchase Request Item',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 )
               ],
-              ...(_items.asMap().map((key, value) {
+              ...(_inventory.asMap().map((key, value) {
                 return MapEntry(
                   key,
                   Container(
@@ -75,10 +63,10 @@ class _ItemsPageState extends State<ItemsPage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => ItemAddPage(
-                                            id: value?['id'],
+                                      builder: (_) => InventoryAddPage(
+                                            id: value?['item']['id'],
                                             onSave: () async {
-                                              fetchItemsData();
+                                              fetchInventoryData();
                                             },
                                           )));
                             },
@@ -89,10 +77,19 @@ class _ItemsPageState extends State<ItemsPage> {
                                 children: [
                                   Row(
                                     children: [
-                                      Container(
-                                        child:
-                                            Text(value?['name'] ?? 'No Name'),
-                                      )
+                                      Expanded(
+                                        child: Container(
+                                          child: Text(value?['item']?['name'] ??
+                                              'No Name'),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          alignment: Alignment.centerRight,
+                                          child:
+                                              Text('${value?['stock'] ?? 0}'),
+                                        ),
+                                      ),
                                     ],
                                   )
                                 ],

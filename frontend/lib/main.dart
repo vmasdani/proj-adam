@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:schoolinventory/appstate.dart';
 import 'package:schoolinventory/maincomponent.dart';
 
-void main() {
+Future main() async {
+  await dotenv.load(
+    fileName: ".env",
+  );
+
   runApp(ChangeNotifierProvider(
       create: (ctx) => AppState(), child: const MyApp()));
 }

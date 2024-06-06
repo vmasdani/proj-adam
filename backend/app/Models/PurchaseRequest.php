@@ -25,6 +25,11 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereUserId($value)
+ * @property int|null $item_id
+ * @property float|null $qty
+ * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereQty($value)
+ * @property-read \App\Models\Item|null $item
  * @mixin \Eloquent
  */
 class PurchaseRequest extends Model
@@ -32,6 +37,14 @@ class PurchaseRequest extends Model
 
     protected $fillable = [
         'id',
-        'user_id'
+        'user_id',
+        'item_id',
+        'qty',
+        'approved'
     ];
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
 }

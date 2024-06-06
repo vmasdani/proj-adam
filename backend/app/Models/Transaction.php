@@ -31,6 +31,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction wherePurchaseRequestId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereQty($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereUpdatedAt($value)
+ * @property-read \App\Models\Borrow|null $borrow
+ * @property-read \App\Models\Item|null $item
+ * @property-read \App\Models\PurchaseRequest|null $purchaseRequest
  * @mixin \Eloquent
  */
 class Transaction extends Model
@@ -48,6 +51,14 @@ class Transaction extends Model
 
     public function item()
     {
-        return $this->hasOne(Item::class);
+        return $this->belongsTo(Item::class);
+    }
+    public function purchaseRequest()
+    {
+        return $this->belongsTo(PurchaseRequest::class);
+    }
+    public function borrow()
+    {
+        return $this->belongsTo(Borrow::class);
     }
 }
