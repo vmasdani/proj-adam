@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\Borrow;
 use App\Models\Item;
+use App\Models\PurchaseRequest;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -82,4 +84,63 @@ Route::post('/transactions', function (Request $r) {
 });
 
 // Borrow
+Route::get('/borrows', function () {
+    $b = Borrow::all();
+
+    $b->each(function (Borrow $b) {
+        $b->item;
+    });
+
+    return $b;
+});
+Route::get('/borrows/{id}', function (int $id) {
+    $b = Borrow::query()->find($id);
+    $b->item;
+
+    return $b;
+});
+
+Route::post('/borrows/{id}/approve/{status}', function (int $id, int $status) {
+    $b = Borrow::query()->find($id);
+    $b->approval_status = $status;
+    $b->save();
+
+    // Borrow start
+    if ($status == 1) {
+        Transaction::query()->updateOrCreate(['id' => null], [
+            'qty' => $b->qty,
+            'item_id' => $b->item_id,
+            'in_out_type' => 'out'
+        ]);
+    }
+
+    // Borrow end
+    if ($status == 3) {
+        Transaction::query()->updateOrCreate(['id' => null], [
+            'qty' => $b->qty,
+            'item_id' => $b->item_id,
+            'in_out_type' => 'in'
+        ]);
+    }
+
+    
+
+    return $b;
+});
+
+Route::post('/borrows', function (Request $r) {
+    $b = json_decode($r->getContent());
+    return Borrow::query()->updateOrCreate(['id' => isset($b->id) ? $b->id : null], (array)$b);
+});
+
 // PR
+Route::get('/purchaserequests', function () {
+    return PurchaseRequest::all();
+});
+Route::get('/purchaserequests/{id}', function (int $id) {
+    return PurchaseRequest::query()->find($id);
+});
+Route::post('/purchaserequests', function (Request $r) {
+    $b = json_decode($r->getContent());
+    return PurchaseRequest::query()->updateOrCreate(['id' => isset($b->id) ? $b->id : null], (array)$b);
+});

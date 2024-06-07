@@ -30,6 +30,10 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereItemId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereQty($value)
  * @property-read \App\Models\Item|null $item
+ * @property int|null $approval_status
+ * @property int|null $done
+ * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereApprovalStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereDone($value)
  * @mixin \Eloquent
  */
 class PurchaseRequest extends Model
@@ -40,7 +44,9 @@ class PurchaseRequest extends Model
         'user_id',
         'item_id',
         'qty',
-        'approved'
+        // 'approved'
+        'approval_status',
+        'done'
     ];
 
     public function item()

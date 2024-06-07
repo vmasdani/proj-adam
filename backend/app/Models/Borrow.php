@@ -32,6 +32,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int|null $done
  * @property-read \App\Models\Item|null $item
  * @method static \Illuminate\Database\Eloquent\Builder|Borrow whereDone($value)
+ * @property int|null $approval_status
+ * @method static \Illuminate\Database\Eloquent\Builder|Borrow whereApprovalStatus($value)
  * @mixin \Eloquent
  */
 class Borrow extends Model
@@ -42,7 +44,8 @@ class Borrow extends Model
         'user_id',
         'item_id',
         'qty',
-        'approved',
+        // 'approved',
+        'approval_status',
         'done'
     ];
 

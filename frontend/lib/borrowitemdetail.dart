@@ -1,0 +1,132 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:schoolinventory/appstate.dart';
+import 'package:schoolinventory/helpers.dart';
+
+class BorrowItemDetailPage extends StatefulWidget {
+  const BorrowItemDetailPage({super.key, this.onSave, this.id});
+
+  final Function? onSave;
+  final dynamic? id;
+
+  @override
+  State<BorrowItemDetailPage> createState() => _BorrowItemDetailPageState();
+}
+
+class _BorrowItemDetailPageState extends State<BorrowItemDetailPage> {
+  var _qtyController = TextEditingController(text: '1');
+
+  dynamic _item = {};
+  double _qty = 1;
+
+  @override
+  void initState() {
+    fetchItemData();
+    super.initState();
+  }
+
+  Future fetchItemData() async {
+    if (widget.id != null) {
+      final d = await fetchItem(widget.id);
+
+      setState(() {
+        _item = d;
+        // _nameController.text = d?['name'];
+      });
+    }
+  }
+
+  Future handleSave() async {
+    try {
+      await http.post(Uri.parse('${dotenv.get('BASE_URL')}/api/borrows'),
+          headers: {'content-type': 'application/json'},
+          body: jsonEncode({
+            'item_id': _item?['id'],
+            'qty': _qty,
+            'approval_status': 0,
+          }));
+
+      final ctx = Provider.of<AppState>(context, listen: false);
+
+      ctx.setCurrentPage(6);
+    } catch (e) {
+      print(e);
+    }
+
+    Navigator.pop(context);
+    widget?.onSave?.call();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Item ${widget.id}'),
+        actions: [
+          // Container(
+          //   child: ElevatedButton(
+          //     child: Text('Save'),
+          //     onPressed: () async {
+          //       handleSave();
+          //     },
+          //   ),
+          // )
+        ],
+      ),
+      body: Container(
+        padding: EdgeInsets.only(left: 5, right: 5),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Text('Item: '),
+                Text(
+                  _item?['name'] ?? '',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+            Row(
+              children: [
+                Text('In stock: '),
+                Text(
+                  '${calculateStock(_item?['transactions'] ?? [])}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                    child: Container(
+                  child: TextField(
+                    onChanged: (v) {
+                      final d = double.tryParse(v);
+
+                      if (d != null) {
+                        _qty = d;
+                      }
+                    },
+                    decoration: InputDecoration(hintText: 'Qty'),
+                  ),
+                )),
+                Container(
+                  child: ElevatedButton(
+                    child: Text('Borrow'),
+                    onPressed: () {
+                      handleSave();
+                    },
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}

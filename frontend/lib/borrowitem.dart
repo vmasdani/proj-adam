@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schoolinventory/appstate.dart';
+import 'package:schoolinventory/borrowitemdetail.dart';
 import 'package:schoolinventory/genericscaffold.dart';
 import 'package:schoolinventory/helpers.dart';
 import 'package:schoolinventory/inventoryadd.dart';
@@ -76,7 +77,7 @@ class _BorrowItemPageState extends State<BorrowItemPage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => InventoryAddPage(
+                                      builder: (_) => BorrowItemDetailPage(
                                             id: value?['item']['id'],
                                             onSave: () async {
                                               fetchInventoryData();
