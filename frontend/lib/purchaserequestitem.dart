@@ -7,12 +7,14 @@ import 'package:schoolinventory/genericscaffold.dart';
 import 'package:schoolinventory/helpers.dart';
 import 'package:schoolinventory/inventoryadd.dart';
 import 'package:schoolinventory/itemadd.dart';
+import 'package:schoolinventory/purchaserequestitemdetail.dart';
 
 class PurchaseRequestItemPage extends StatefulWidget {
   const PurchaseRequestItemPage({super.key});
 
   @override
-  State<PurchaseRequestItemPage> createState() => _PurchaseRequestItemPageState();
+  State<PurchaseRequestItemPage> createState() =>
+      _PurchaseRequestItemPageState();
 }
 
 class _PurchaseRequestItemPageState extends State<PurchaseRequestItemPage> {
@@ -36,7 +38,6 @@ class _PurchaseRequestItemPageState extends State<PurchaseRequestItemPage> {
   @override
   Widget build(BuildContext context) {
     return GenericScaffold(
-      
       body: SingleChildScrollView(
         child: Container(
           child: Column(
@@ -63,7 +64,8 @@ class _PurchaseRequestItemPageState extends State<PurchaseRequestItemPage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => InventoryAddPage(
+                                      builder: (_) =>
+                                          PurchaseRequestItemDetailPage(
                                             id: value?['item']['id'],
                                             onSave: () async {
                                               fetchInventoryData();

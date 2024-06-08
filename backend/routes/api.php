@@ -37,7 +37,7 @@ Route::get('/items/{id}', function (?int $id) {
     $foundItem = Item::query()->find($id);
 
     $foundItem->transactions->each(function (Transaction $t) {
-        $t->purchaseRequest();
+        $t->purchaseRequest;
         $t->borrow;
     });
 
@@ -107,23 +107,27 @@ Route::post('/borrows/{id}/approve/{status}', function (int $id, int $status) {
 
     // Borrow start
     if ($status == 1) {
-        Transaction::query()->updateOrCreate(['id' => null], [
-            'qty' => $b->qty,
-            'item_id' => $b->item_id,
-            'in_out_type' => 'out'
-        ]);
+        $t = new Transaction;
+        $t->qty = $b->qty;
+        $t->item_id = $b->item_id;
+        $t->in_out_type = 'out';
+        $t->borrow_id = $b->id;
+
+        Transaction::query()->updateOrCreate(['id' => null], $t->toArray());
     }
 
     // Borrow end
     if ($status == 3) {
-        Transaction::query()->updateOrCreate(['id' => null], [
-            'qty' => $b->qty,
-            'item_id' => $b->item_id,
-            'in_out_type' => 'in'
-        ]);
+        $t = new Transaction;
+        $t->qty = $b->qty;
+        $t->item_id = $b->item_id;
+        $t->in_out_type = 'in';
+        $t->borrow_id = $b->id;
+
+        Transaction::query()->updateOrCreate(['id' => null], $t->toArray());
     }
 
-    
+
 
     return $b;
 });
@@ -135,12 +139,40 @@ Route::post('/borrows', function (Request $r) {
 
 // PR
 Route::get('/purchaserequests', function () {
-    return PurchaseRequest::all();
+    $p = PurchaseRequest::all();
+
+    $p->each(function (PurchaseRequest $p) {
+        $p->item;
+    });
+
+    return $p;
 });
 Route::get('/purchaserequests/{id}', function (int $id) {
-    return PurchaseRequest::query()->find($id);
+    $p = PurchaseRequest::query()->find($id);
+    $p->item;
+
+    return $p;
 });
 Route::post('/purchaserequests', function (Request $r) {
     $b = json_decode($r->getContent());
     return PurchaseRequest::query()->updateOrCreate(['id' => isset($b->id) ? $b->id : null], (array)$b);
+});
+
+Route::post('/purchaserequests/{id}/approve/{status}', function (int $id, int $status) {
+    $p = PurchaseRequest::query()->find($id);
+    $p->approval_status = $status;
+    $p->save();
+
+    // PR start
+    if ($status == 1) {
+        $t = new Transaction;
+        $t->qty = $p->qty;
+        $t->item_id = $p->item_id;
+        $t->in_out_type = 'in';
+        $t->purchase_request_id = $p->id;
+
+        Transaction::query()->updateOrCreate(['id' => null], $t->toArray());
+    }
+
+    return $p;
 });

@@ -7,6 +7,7 @@ import 'package:schoolinventory/genericscaffold.dart';
 import 'package:schoolinventory/inventory.dart';
 import 'package:schoolinventory/items.dart';
 import 'package:schoolinventory/purchaserequestitem.dart';
+import 'package:schoolinventory/purchaserequestlist.dart';
 
 class MainComponent extends StatefulWidget {
   const MainComponent({super.key});
@@ -59,17 +60,9 @@ class _MainComponentState extends State<MainComponent> {
 
           case 6:
             return BorrowListPage();
+            
           case 7:
-            return GenericScaffold(
-              body: Container(
-                padding: EdgeInsets.only(
-                  left: 5,
-                  right: 5,
-                ),
-                alignment: Alignment.topLeft,
-                child: Text('Purchase Request List'),
-              ),
-            );
+            return PurchaseRequestListPage();
 
           default:
             return GenericScaffold(

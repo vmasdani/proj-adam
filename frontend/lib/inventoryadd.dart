@@ -222,22 +222,32 @@ class _InventoryAddPageState extends State<InventoryAddPage> {
                                             )),
                                           ],
                                         ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Container(
-                                              child: Text('Borrow: '),
-                                            )),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Container(
-                                              child: Text('Purchase Request: '),
-                                            )),
-                                          ],
-                                        ),
+                                        ...(value?['borrow'] != null
+                                            ? [
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                        child: Container(
+                                                      child: Text(
+                                                          'Borrow: ${value?['borrow_id'] != null ? '#${value?['borrow_id'] ?? ''} (${DateFormat.yMMMEd().add_jms().format(DateTime.tryParse(value?['borrow']?['created_at'] ?? '')?.toLocal() ?? DateTime.now())})' : ''} '),
+                                                    )),
+                                                  ],
+                                                )
+                                              ]
+                                            : []),
+                                        ...(value?['purchase_request'] != null
+                                            ? [
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                        child: Container(
+                                                      child: Text(
+                                                          'Purchase Request: ${value?['purchase_request_id'] != null ? '#${value?['purchase_request_id']} (${DateFormat.yMMMEd().add_jms().format(DateTime.tryParse(value?['purchase_request']?['created_at'] ?? '')?.toLocal() ?? DateTime.now())}' : ''}'),
+                                                    )),
+                                                  ],
+                                                )
+                                              ]
+                                            : []),
                                       ],
                                     ),
                                   ),
