@@ -71,9 +71,9 @@ elif app == "app":
 
     elif action == "build":
         steps = [
-            ("yarn build", "./frontend"),
+            ("flutter build web", "./frontend"),
             # ("mv public public_html", "./backend"),
-            ("cp -r frontend/dist/* ./backend/public", "./"),
+            ("cp -r frontend/build/web/* ./backend/public", "./"),
             ("zip -r release.zip .", "./backend"),
             ("mv release.zip ..", "./backend"),
             # ("mv public_html public", "./backend"),
