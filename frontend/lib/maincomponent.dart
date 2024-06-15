@@ -6,8 +6,10 @@ import 'package:schoolinventory/borrowlist.dart';
 import 'package:schoolinventory/genericscaffold.dart';
 import 'package:schoolinventory/inventory.dart';
 import 'package:schoolinventory/items.dart';
+import 'package:schoolinventory/login.dart';
 import 'package:schoolinventory/purchaserequestitem.dart';
 import 'package:schoolinventory/purchaserequestlist.dart';
+import 'package:schoolinventory/users.dart';
 
 class MainComponent extends StatefulWidget {
   const MainComponent({super.key});
@@ -21,6 +23,10 @@ class _MainComponentState extends State<MainComponent> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, value, child) {
+        if (value.user == null) {
+          return LoginPage();
+        }
+
         switch (value.currentPage) {
           case 0:
             return GenericScaffold(
@@ -30,21 +36,13 @@ class _MainComponentState extends State<MainComponent> {
                   right: 5,
                 ),
                 alignment: Alignment.topLeft,
-                child: Text('Home'),
+                child: Text(
+                    'Welcome, ${value?.user?['username']} (${value?.user?['role']})'),
               ),
             );
 
           case 1:
-            return GenericScaffold(
-              body: Container(
-                padding: EdgeInsets.only(
-                  left: 5,
-                  right: 5,
-                ),
-                alignment: Alignment.topLeft,
-                child: Text('Users'),
-              ),
-            );
+            return UsersPage();
 
           case 2:
             return ItemsPage();
@@ -60,7 +58,7 @@ class _MainComponentState extends State<MainComponent> {
 
           case 6:
             return BorrowListPage();
-            
+
           case 7:
             return PurchaseRequestListPage();
 

@@ -4,6 +4,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+Future<List<dynamic>> fetchUsers() async {
+  try {
+    final res =
+        await http.get(Uri.parse('${dotenv.get('BASE_URL')}/api/users'));
+
+    if (res.statusCode != 200) {
+      throw res.body;
+    }
+
+    return jsonDecode(res.body) as List<dynamic>;
+  } catch (e) {
+    print('[Error items] $e');
+    return [];
+  }
+}
+
+Future<dynamic> fetchUser(dynamic? id) async {
+  try {
+    final res =
+        await http.get(Uri.parse('${dotenv.get('BASE_URL')}/api/users/${id}'));
+
+    if (res.statusCode != 200) {
+      throw res.body;
+    }
+
+    // print(res.body);
+    return jsonDecode(res.body) as dynamic;
+  } catch (e) {
+    print('[Error items] $e');
+    return [];
+  }
+}
+
+Future<dynamic> login(dynamic? body) async {
+  try {
+    final res = await http.post(
+        Uri.parse('${dotenv.get('BASE_URL')}/api/login'),
+        headers: {'content-type': 'application/json'},
+        body: jsonEncode(body));
+
+    if (res.statusCode != 200) {
+      throw res.body;
+    }
+
+    // print(res.body);
+    return jsonDecode(res.body) as dynamic;
+  } catch (e) {
+    print('[Error login] $e');
+    return null;
+  }
+}
+
 Future<List<dynamic>> fetchItems() async {
   try {
     final res =

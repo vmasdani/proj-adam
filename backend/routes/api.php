@@ -27,6 +27,32 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/users', function () {
     return User::all();
 });
+Route::get('/users/{id}', function (?int $id) {
+    $foundUser = User::query()->find($id);
+
+    if ($foundUser == null) {
+        return response('Not found', 404);
+    }
+
+    return $foundUser;
+});
+
+Route::post('/users', function (Request $r) {
+    $b = json_decode($r->getContent());
+    return User::query()->updateOrCreate(['id' => isset($b->id) ? $b->id : null], (array)$b);
+});
+
+Route::post('/login', function (Request $r) {
+    $b = json_decode($r->getContent());
+
+    $foundUser = User::query()->where('username', '=', $b?->username)->first();
+
+    if ($foundUser == null) {
+        return response('Not found', 404);
+    }
+
+    return $foundUser;
+});
 
 
 // Item
