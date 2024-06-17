@@ -6,6 +6,7 @@ use App\Models\PurchaseRequest;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,6 +60,10 @@ Route::post('/login', function (Request $r) {
 Route::get('/items', function () {
     return Item::all();
 });
+Route::get('/items/{id}/photo', function (Request $r, int $id) {
+    return  response()->file(storage_path() . '/item_' . $id);
+});
+
 Route::get('/items/{id}', function (?int $id) {
     $foundItem = Item::query()->find($id);
 
@@ -72,7 +77,14 @@ Route::get('/items/{id}', function (?int $id) {
 
 Route::post('/items', function (Request $r) {
     $b = json_decode($r->getContent());
-    return Item::query()->updateOrCreate(['id' => isset($b->id) ? $b->id : null], (array)$b);
+    $item = Item::query()->updateOrCreate(['id' => isset($b->id) ? $b->id : null], (array)$b);
+
+    // Check image
+    if (isset($b->image)) {
+        File::put(storage_path() . '/item_' . $item->id, base64_decode($b->image));
+    }
+
+    return;
 });
 
 // Inventory
@@ -115,6 +127,8 @@ Route::get('/borrows', function () {
 
     $b->each(function (Borrow $b) {
         $b->item;
+        $b->user;
+        $b->approvalUser;
     });
 
     return $b;
@@ -122,13 +136,25 @@ Route::get('/borrows', function () {
 Route::get('/borrows/{id}', function (int $id) {
     $b = Borrow::query()->find($id);
     $b->item;
+    $b->user;
+    $b->approvalUser;
 
     return $b;
 });
 
-Route::post('/borrows/{id}/approve/{status}', function (int $id, int $status) {
+Route::post('/borrows/{id}/approve/{status}', function (int $id, int $status, Request $r) {
     $b = Borrow::query()->find($id);
     $b->approval_status = $status;
+
+    // get userid
+    $userId = $r->query('userId');
+    if ($userId != null && $userId != "") {
+        try {
+            $b->approval_user_id = (int) $userId;
+        } catch (Exception $e) {
+        }
+    }
+
     $b->save();
 
     // Borrow start
@@ -169,6 +195,8 @@ Route::get('/purchaserequests', function () {
 
     $p->each(function (PurchaseRequest $p) {
         $p->item;
+        $p->user;
+        $p->approvalUser;
     });
 
     return $p;
@@ -176,6 +204,8 @@ Route::get('/purchaserequests', function () {
 Route::get('/purchaserequests/{id}', function (int $id) {
     $p = PurchaseRequest::query()->find($id);
     $p->item;
+    $p->user;
+    $p->approvalUser;
 
     return $p;
 });
@@ -184,9 +214,21 @@ Route::post('/purchaserequests', function (Request $r) {
     return PurchaseRequest::query()->updateOrCreate(['id' => isset($b->id) ? $b->id : null], (array)$b);
 });
 
-Route::post('/purchaserequests/{id}/approve/{status}', function (int $id, int $status) {
+Route::post('/purchaserequests/{id}/approve/{status}', function (int $id, int $status, Request $r) {
+
+
     $p = PurchaseRequest::query()->find($id);
     $p->approval_status = $status;
+
+    // get userid
+    $userId = $r->query('userId');
+    if ($userId != null && $userId != "") {
+        try {
+            $p->approval_user_id = (int) $userId;
+        } catch (Exception $e) {
+        }
+    }
+
     $p->save();
 
     // PR start

@@ -34,6 +34,10 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int|null $done
  * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereApprovalStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereDone($value)
+ * @property int|null $approval_user_id
+ * @property-read \App\Models\User|null $approvalUser
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|PurchaseRequest whereApprovalUserId($value)
  * @mixin \Eloquent
  */
 class PurchaseRequest extends Model
@@ -42,6 +46,7 @@ class PurchaseRequest extends Model
     protected $fillable = [
         'id',
         'user_id',
+        'approval_user_id',
         'item_id',
         'qty',
         // 'approved'
@@ -52,5 +57,13 @@ class PurchaseRequest extends Model
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function approvalUser()
+    {
+        return $this->belongsTo(User::class);
     }
 }

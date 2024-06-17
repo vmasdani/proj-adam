@@ -74,7 +74,7 @@ elif app == "app":
             ("flutter build web", "./frontend"),
             # ("mv public public_html", "./backend"),
             ("cp -r frontend/build/web/* ./backend/public", "./"),
-            ("zip -r release.zip .", "./backend"),
+            ("zip -r release.zip . -x ./storage/item*", "./backend"),
             ("mv release.zip ..", "./backend"),
             # ("mv public_html public", "./backend"),
         ]

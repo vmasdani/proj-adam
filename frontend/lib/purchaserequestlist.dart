@@ -19,7 +19,8 @@ class PurchaseRequestListPage extends StatefulWidget {
   // final dynamic? id;
 
   @override
-  State<PurchaseRequestListPage> createState() => _PurchaseRequestListPageState();
+  State<PurchaseRequestListPage> createState() =>
+      _PurchaseRequestListPageState();
 }
 
 class _PurchaseRequestListPageState extends State<PurchaseRequestListPage> {
@@ -100,7 +101,8 @@ class _PurchaseRequestListPageState extends State<PurchaseRequestListPage> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (_) => PurchaseRequestDetailPage(
+                                            builder: (_) =>
+                                                PurchaseRequestDetailPage(
                                                   id: value?['id'],
                                                   onSave: () async {
                                                     fetchPurchaseRequestsData();
@@ -148,7 +150,8 @@ class _PurchaseRequestListPageState extends State<PurchaseRequestListPage> {
                                           children: [
                                             Expanded(
                                                 child: Container(
-                                              child: Text('Requested by: '),
+                                              child: Text(
+                                                  'Requested by: ${value?['user']?['username'] ?? ''}'),
                                             )),
                                           ],
                                         ),
@@ -156,7 +159,8 @@ class _PurchaseRequestListPageState extends State<PurchaseRequestListPage> {
                                           children: [
                                             Expanded(
                                                 child: Container(
-                                              child: Text('Approved by: '),
+                                              child: Text(
+                                                  'Approved by: ${value?['approval_user']?['username'] ?? ''}'),
                                             )),
                                           ],
                                         ),

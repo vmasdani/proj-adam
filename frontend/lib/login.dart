@@ -55,9 +55,18 @@ class _LoginPageState extends State<LoginPage> {
                         final d =
                             await login({'username': _usernameController.text});
 
-      
                         if (d != null) {
                           ctx.setUser(d);
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text(
+                                    'Login error. Please check username or password.'),
+                              );
+                            },
+                          );
                         }
                       } catch (e) {
                         showDialog(

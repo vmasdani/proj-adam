@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:schoolinventory/appstate.dart';
 import 'package:schoolinventory/borrowdetail.dart';
 import 'package:schoolinventory/genericscaffold.dart';
 import 'package:schoolinventory/helpers.dart';
@@ -74,104 +76,116 @@ class _BorrowListPageState extends State<BorrowListPage> {
       //   ],
       // ),
       body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              Container(
-                child: Text(
-                  'Borrow List',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+        child: Consumer<AppState>(
+          builder: (context, value, child) => Container(
+            child: Column(
+              children: [
+                Container(
+                  child: Text(
+                    'Borrow List',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-              // Text(jsonEncode(_borrows)),
-              Divider(),
-              ...(((_borrows ?? []) as List<dynamic>)
-                  .asMap()
-                  .map((key, value) {
-                    return MapEntry(
-                        key,
-                        Container(
-                          child: Column(
-                            children: [
-                              Card(
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => BorrowDetailPage(
-                                                  id: value?['id'],
-                                                  onSave: () async {
-                                                    fetchBorrowsData();
-                                                  },
-                                                )));
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(5),
-                                    margin: EdgeInsets.all(5),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Container(
-                                              child: Text(
-                                                  'Item: ${value?['item']?['name'] ?? ''}'),
-                                            )),
-                                            Container(
-                                              child: checkApprovalStatus(
-                                                  value?['approval_status'] ??
-                                                      0),
-                                            )
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Container(
-                                              child: Text(
-                                                  'Qty: ${value?['qty'] ?? 0}'),
-                                            )),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Container(
-                                              child: Text(
-                                                  '${DateFormat.yMMMEd().add_jms().format(DateTime.parse(value?['created_at']).toLocal())}'),
-                                            )),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Container(
-                                              child: Text('Requested by: '),
-                                            )),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Container(
-                                              child: Text('Approved by: '),
-                                            )),
-                                          ],
-                                        ),
-                                      ],
+                // Text(jsonEncode(_borrows)),
+                Divider(),
+                ...(((_borrows ?? []) as List<dynamic>)
+                    .where((b) {
+                      if (value?.user?['role'] == 'User') {
+                        return value?.user?['id'] == b?['user']?['id'];
+                      } else {
+                        return true;
+                      }
+                    })
+                    .toList()
+                    .asMap()
+                    .map((key, value) {
+                      return MapEntry(
+                          key,
+                          Container(
+                            child: Column(
+                              children: [
+                                Card(
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) => BorrowDetailPage(
+                                                    id: value?['id'],
+                                                    onSave: () async {
+                                                      fetchBorrowsData();
+                                                    },
+                                                  )));
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(5),
+                                      margin: EdgeInsets.all(5),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                  child: Container(
+                                                child: Text(
+                                                    'Item: ${value?['item']?['name'] ?? ''}'),
+                                              )),
+                                              Container(
+                                                child: checkApprovalStatus(
+                                                    value?['approval_status'] ??
+                                                        0),
+                                              )
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                  child: Container(
+                                                child: Text(
+                                                    'Qty: ${value?['qty'] ?? 0}'),
+                                              )),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                  child: Container(
+                                                child: Text(
+                                                    '${DateFormat.yMMMEd().add_jms().format(DateTime.parse(value?['created_at']).toLocal())}'),
+                                              )),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                  child: Container(
+                                                child: Text(
+                                                    'Requested by: ${value?['user']?['username'] ?? ''}'),
+                                              )),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                  child: Container(
+                                                child: Text(
+                                                    'Approved by: ${value?['approval_user']?['username'] ?? ''}'),
+                                              )),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ));
-                  })
-                  .values
-                  .toList()
-                  .reversed)
-            ],
+                                )
+                              ],
+                            ),
+                          ));
+                    })
+                    .values
+                    .toList()
+                    .reversed)
+              ],
+            ),
           ),
         ),
       ),

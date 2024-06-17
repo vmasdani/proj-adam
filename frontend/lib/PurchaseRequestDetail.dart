@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:schoolinventory/appstate.dart';
 import 'package:schoolinventory/helpers.dart';
 import 'package:collection/collection.dart';
 
@@ -14,7 +16,8 @@ class PurchaseRequestDetailPage extends StatefulWidget {
   final dynamic? id;
 
   @override
-  State<PurchaseRequestDetailPage> createState() => _PurchaseRequestDetailPageState();
+  State<PurchaseRequestDetailPage> createState() =>
+      _PurchaseRequestDetailPageState();
 }
 
 class _PurchaseRequestDetailPageState extends State<PurchaseRequestDetailPage> {
@@ -59,9 +62,11 @@ class _PurchaseRequestDetailPageState extends State<PurchaseRequestDetailPage> {
 
   Future handleSave(int status) async {
     try {
+      final ctx = Provider.of<AppState>(context, listen: false);
+
       final res = await http.post(
         Uri.parse(
-            '${dotenv.get('BASE_URL')}/api/purchaserequests/${widget.id}/approve/${status}'),
+            '${dotenv.get('BASE_URL')}/api/purchaserequests/${widget.id}/approve/${status}?userId=${status == 1 || status == 2 ? (ctx?.user?['id']) : ''}'),
         headers: {'content-type': 'application/json'},
       );
 
@@ -105,7 +110,8 @@ class _PurchaseRequestDetailPageState extends State<PurchaseRequestDetailPage> {
               Container(
                 child: Text('Requested: ${_borrow?['qty']}'),
               ),
-              ...(_borrow?['approval_status'] == null || _borrow?['approval_status'] == 0
+              ...(_borrow?['approval_status'] == null ||
+                      _borrow?['approval_status'] == 0
                   ? [
                       Container(
                         child: Row(
@@ -127,7 +133,6 @@ class _PurchaseRequestDetailPageState extends State<PurchaseRequestDetailPage> {
                       )
                     ]
                   : []),
-            
             ],
           ),
         ),

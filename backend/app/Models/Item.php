@@ -25,13 +25,16 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|Item whereUpdatedAt($value)
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Transaction> $transactions
  * @property-read int|null $transactions_count
+ * @property string|null $description
+ * @method static \Illuminate\Database\Eloquent\Builder|Item whereDescription($value)
  * @mixin \Eloquent
  */
 class Item extends Model
 {
     protected $fillable = [
         'id',
-        'name'
+        'name',
+        'description'
     ];
 
     public function transactions()

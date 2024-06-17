@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:schoolinventory/appstate.dart';
 import 'package:schoolinventory/helpers.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class PurchaseRequestItemDetailPage extends StatefulWidget {
   const PurchaseRequestItemDetailPage({super.key, this.onSave, this.id});
@@ -44,6 +45,8 @@ class _PurchaseRequestItemDetailPageState
 
   Future handleSave() async {
     try {
+      final ctx = Provider.of<AppState>(context, listen: false);
+
       await http.post(
           Uri.parse('${dotenv.get('BASE_URL')}/api/purchaserequests'),
           headers: {'content-type': 'application/json'},
@@ -51,9 +54,8 @@ class _PurchaseRequestItemDetailPageState
             'item_id': _item?['id'],
             'qty': _qty,
             'approval_status': 0,
+            'user_id': ctx?.user?['id']
           }));
-
-      final ctx = Provider.of<AppState>(context, listen: false);
 
       ctx.setCurrentPage(7);
     } catch (e) {
@@ -95,6 +97,15 @@ class _PurchaseRequestItemDetailPageState
             ),
             Row(
               children: [
+                Text('Description: '),
+                Text(
+                  _item?['description'] ?? '',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+            Row(
+              children: [
                 Text('In stock: '),
                 Text(
                   '${calculateStock(_item?['transactions'] ?? [])}',
@@ -126,7 +137,17 @@ class _PurchaseRequestItemDetailPageState
                   ),
                 )
               ],
-            )
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height / 2,
+              // child: FractionallySizedBox(
+              //   heightFactor: 0.4,
+              child: FadeInImage(
+                image: NetworkImage(
+                    "${dotenv.get("BASE_URL")}/api/items/${widget.id}/photo?ts=${DateTime.now().millisecondsSinceEpoch}"),
+                placeholder: MemoryImage(kTransparentImage),
+              ),
+            ),
           ],
         ),
       ),

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:schoolinventory/appstate.dart';
 import 'package:schoolinventory/helpers.dart';
 import 'package:collection/collection.dart';
 
@@ -58,10 +60,12 @@ class _BorrowDetailPageState extends State<BorrowDetailPage> {
   }
 
   Future handleSave(int status) async {
+    final ctx = Provider.of<AppState>(context, listen: false);
+
     try {
       final res = await http.post(
         Uri.parse(
-            '${dotenv.get('BASE_URL')}/api/borrows/${widget.id}/approve/${status}'),
+            '${dotenv.get('BASE_URL')}/api/borrows/${widget.id}/approve/${status}?userId=${status == 1 || status == 2 ? (ctx?.user?['id']) : ''}'),
         headers: {'content-type': 'application/json'},
       );
 
@@ -92,58 +96,62 @@ class _BorrowDetailPageState extends State<BorrowDetailPage> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              Container(
-                child: Text('${_item?['name']}'),
-              ),
-              Container(
-                child: Text(
-                    'Remaining stock: ${calculateStock(_item?['transactions'] ?? [])}'),
-              ),
-              Container(
-                child: Text('Requested: ${_borrow?['qty']}'),
-              ),
-              ...(_borrow?['approval_status'] == null || _borrow?['approval_status'] == 0
-                  ? [
-                      Container(
-                        child: Row(
-                          children: [
-                            ElevatedButton(
-                              child: Text('Approve'),
-                              onPressed: () async {
-                                handleSave(1);
-                              },
-                            ),
-                            ElevatedButton(
-                              child: Text('Reject'),
-                              onPressed: () async {
-                                handleSave(2);
-                              },
-                            )
-                          ],
-                        ),
-                      )
-                    ]
-                  : []),
-              ...(_borrow?['approval_status'] == 1
-                  ? [
-                      Container(
-                        child: Row(
-                          children: [
-                            ElevatedButton(
-                              child: Text('Return'),
-                              onPressed: () async {
-                                handleSave(3);
-                              },
-                            )
-                          ],
-                        ),
-                      )
-                    ]
-                  : []),
-            ],
+        child: Consumer<AppState>(
+          builder: (context, value, child) => Container(
+            child: Column(
+              children: [
+                Container(
+                  child: Text('${_item?['name']}'),
+                ),
+                Container(
+                  child: Text(
+                      'Remaining stock: ${calculateStock(_item?['transactions'] ?? [])}'),
+                ),
+                Container(
+                  child: Text('Requested: ${_borrow?['qty']}'),
+                ),
+                ...((_borrow?['approval_status'] == null ||
+                            _borrow?['approval_status'] == 0) &&
+                        !(value?.user?['role'] == 'User')
+                    ? [
+                        Container(
+                          child: Row(
+                            children: [
+                              ElevatedButton(
+                                child: Text('Approve'),
+                                onPressed: () async {
+                                  handleSave(1);
+                                },
+                              ),
+                              ElevatedButton(
+                                child: Text('Reject'),
+                                onPressed: () async {
+                                  handleSave(2);
+                                },
+                              )
+                            ],
+                          ),
+                        )
+                      ]
+                    : []),
+                ...(_borrow?['approval_status'] == 1
+                    ? [
+                        Container(
+                          child: Row(
+                            children: [
+                              ElevatedButton(
+                                child: Text('Return'),
+                                onPressed: () async {
+                                  handleSave(3);
+                                },
+                              )
+                            ],
+                          ),
+                        )
+                      ]
+                    : []),
+              ],
+            ),
           ),
         ),
       ),

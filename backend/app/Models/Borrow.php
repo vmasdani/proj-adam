@@ -34,6 +34,10 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|Borrow whereDone($value)
  * @property int|null $approval_status
  * @method static \Illuminate\Database\Eloquent\Builder|Borrow whereApprovalStatus($value)
+ * @property int|null $approval_user_id
+ * @property-read \App\Models\User|null $approvalUser
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Borrow whereApprovalUserId($value)
  * @mixin \Eloquent
  */
 class Borrow extends Model
@@ -42,6 +46,7 @@ class Borrow extends Model
     protected $fillable = [
         'id',
         'user_id',
+        'approval_user_id',
         'item_id',
         'qty',
         // 'approved',
@@ -52,5 +57,13 @@ class Borrow extends Model
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function approvalUser()
+    {
+        return $this->belongsTo(User::class);
     }
 }
